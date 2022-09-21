@@ -1,0 +1,20 @@
+echo = funciona como print, se usa da seguinte forma: echo "ola mundo";.
+$n = variavel se declara com "$".
+========================================================================================================================
+FUNÇÕES ARITIMETRICAS
+
+abs() = para colocar o valor em absoluto, Ex.: $n1 = -3 abs($n1) = 3.
+pow() = para colocar em potencia, Ex.:$n1 = 4 pow($n1,3) = 64.
+sqrt() para achar a raiz quadadrada, Ex.: sqrt(4) = 2.
+round() pra arredondamento, Ex.: round(3.6) = 4.
+intval() para pegar so o numero inteiro, Ex.: intval(3.9999) = 3.
+number_format(numero, casas, separador, separador milhar) para formatação de numero,Ex.: number_format(8000, 2, ",", ".") = 8.000,00 .
+$$n = variavel de variavel, Ex.: $nome = mateus $$nome = eu; resultado $mateus($$nome) = eu.
+==============================================================================================================================================
+FUNÇÕES
+
+date() = para pegar data atual, Ex.: 
+
+$atual = date("d-m-y") ou date("y") = 22 e date("Y") = 2022
+
+date_format() = primeiramente para usar essa função, temos q usar outra q seria o date_creat(). date_creat é usado para voce poder modificar a data q foi recebida de um formulario. Ex.: date_creat($data); date_format($data, 'Y').

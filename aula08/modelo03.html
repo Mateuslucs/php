@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ot-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="estilo/style.css">
+    <title>modelo03</title>
+</head>
+<body>
+    <div>
+        <form action="formulario03.php" method="get">
+            <p>
+                <label for="itxt">Testo:</label>
+                <input type="text" name="t" id="itxt">
+            </p>
+            <p>
+                <label for="itam">Testo:</label>
+                <select name="tam" id="itam">
+                    <option value="8pt">0</option>
+                    <option value="10pt">10</option>
+                    <option value="14pt" selected>14</option>
+                    <option value="20pt">20</option>
+                    <option value="40pt">40</option>
+                </select>
+            </p>
+            <p>
+                <label for="icor">Cor</label>
+                <input type="color" name="cor" id="icor">
+            </p>
+            <input type="submit" value="Gerar">
+        </form>
+    </div>
+</body>
+</html>
