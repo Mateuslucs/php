@@ -13,8 +13,20 @@ $$n = variavel de variavel, Ex.: $nome = mateus $$nome = eu; resultado $mateus($
 ==============================================================================================================================================
 FUNÇÕES
 
-date() = para pegar data atual, Ex.: 
-
-$atual = date("d-m-y") ou date("y") = 22 e date("Y") = 2022
+date() = para pegar data atual, Ex.: $atual = date("d-m-y") ou date("y") = 22 e date("Y") = 2022
 
 date_format() = primeiramente para usar essa função, temos q usar outra q seria o date_creat(). date_creat é usado para voce poder modificar a data q foi recebida de um formulario. Ex.: date_creat($data); date_format($data, 'Y').
+
+func_get_args() = vai receber todos os valores numa função, Ex.: $p = func_get_args();
+
+func_num_args() = vai pegar o total de elementos recebidos na função, Ex.: $total = func_num_args();
+
+&(em função) = passa o valor por referencia, alteranda o valor da variavel que colocar na função.
+
+include = serve para incluir funções externas, Ex.: include "funções.php";
+
+require = faz a mesma coisa do include, mas quando a função n é achada ela da erro fatal no codigo.
+
+include_once = ele confere se tal arquivo externo foi carregado, se caso ja foi ele n vai carregar dnv, mas se n tiver carregado ele vai carregar.
+
+require_once = faz a msm coisa que o include_once, so muda o fato do erro fatal.
