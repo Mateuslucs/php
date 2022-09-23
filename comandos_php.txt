@@ -53,7 +53,30 @@ str_split() = vai criar um array por letra.
 implode() ou join() = vai explodir os valores do array dando a opção do modo que vai ser separado, Ex.: 
 $carros_list = ["civic","honda","lamborghini","volkswagen"]; 
 $carros = implode(" ",$carros_list); 
-echo $carros; resultado: civic honda lamborghini volkswagen
+echo $carros; resultado: civic honda lamborghini volkswagen.
+
+strtolower() = é para deixar todas as letras em minusculas.
+
+strtoupper() = é para deixar todas as letras em maiusculas.
+
+ucfirst() = colocar so a primeira letra em maiuscula.
+
+ucwords() = colocar em letra maiuscula a primeira letra de cada palavra na string.
+
+strrev() = vai colocar a string ao contrario.
+
+stripos() = vai passar a posição da palavra de uma string, Ex.: strpos($frase, "php");.
+
+substr_count($frase, "palavra") = para contar quantas vezes essa palavra apareceu.
+
+substr($frase,9,5) = é para fatiar a string, controlando onde começa e onde termina, Ex.: 
+$site = "Curso em Video";
+$sub = substr($site,9,5);
+echo "<br>$sub"; resultado: Video.
+
+str_pad($nome, total de espaços, ".", str_pad_right(direção)) = é para dar um padding na palavra.
+
+str_ireplace("palavra_antiga","palavra_nova", $frase) = vai trocar a "palavra_antiga" pela "palavra_nova" numa string.
 
 func_get_args() = vai receber todos os valores numa função, Ex.: $p = func_get_args();
 
