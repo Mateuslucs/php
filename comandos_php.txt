@@ -1,5 +1,26 @@
 echo = funciona como print, se usa da seguinte forma: echo "ola mundo";.
+
+printf() = funciona para printar de foma formatada, Ex.: ($p = "leite"; $pr = "4.5"; printf("O %s custa R$ %.2f", $p, $pr);) resultado: O leite custa R$ 4.50 .
+
+%d = valor decimal na formatação(positivo ou negativo).
+
+%u = valor decimal sem sinal na formatação(apenas positivo).
+
+%f = valor real na formatação.
+
+%s = valor string na formatação.
+
 $n = variavel se declara com "$".
+
+print_r() = serve para ver a lista por completo, Ex.: ($x = [9,5,6,8]; print_r($x);) resultado: Array ( [0] => 9 [1] => 5 [2] => 6 [3] => 8 ).
+
+var_dump(); = tambem para ver a lista so que de maneira diferente, Ex.: ($x = [9,5,6,8]; var_dump($x);) resultado: array(4) { [0]=> int(9) [1]=> int(5) [2]=> int(6) [3]=> int(8) }.
+
+var_export(); tambem para ver lista mas em jeito diferente, Ex.: ($x = [9,5,6,8]; var_export($x);) resultado: array ( 0 => 9, 1 => 5, 2 => 6, 3 => 8, ).
+
+wordwrap() = serve para fomatar algum texto com quebras, Ex.: ($t = "texto_grande"; wordwrap($t, 50, "<br>\n", false);) aqui ele vai carregar o texto e vai colocar um limite de tamnho, como vc pode ver no parametro "50" e em seguida colocamos a quebra a tag da quebra no html "<br>" e se quiser deixar do formatado tambem no codigo é só colocar "\n" em seguida como está exemplificado, e esse "false" é para dizer q eu n quero quebrar palavras mas se caso queira é só colocar "true".
+
+
 ========================================================================================================================
 FUNÇÕES ARITIMETRICAS
 
@@ -17,11 +38,28 @@ date() = para pegar data atual, Ex.: $atual = date("d-m-y") ou date("y") = 22 e 
 
 date_format() = primeiramente para usar essa função, temos q usar outra q seria o date_creat(). date_creat é usado para voce poder modificar a data q foi recebida de um formulario. Ex.: date_creat($data); date_format($data, 'Y').
 
+strlen() = para saber quantos caracteres tem na strings.
+
+trim() = serve para retirar espaços inuteis tanto no final como no começo de uma string.
+
+ltrim() = serve para tirar espaços só do inicio.
+
+rtrim() serve para tirar espaços só do final.
+
+str_word_count() = ele vai contar quantas palavras tem na string, mas ele tem mais 2 funções dentro dela com os parametros "0,1,2". O "0" ele vai so contar, ja o "1" ele vai entregar um array dessa string e o "2" vai estregar as posições exatas de onde começa cada palavra.
+
+str_split() = vai criar um array por letra.
+
+implode() ou join() = vai explodir os valores do array dando a opção do modo que vai ser separado, Ex.: 
+$carros_list = ["civic","honda","lamborghini","volkswagen"]; 
+$carros = implode(" ",$carros_list); 
+echo $carros; resultado: civic honda lamborghini volkswagen
+
 func_get_args() = vai receber todos os valores numa função, Ex.: $p = func_get_args();
 
 func_num_args() = vai pegar o total de elementos recebidos na função, Ex.: $total = func_num_args();
 
-&(em função) = passa o valor por referencia, alteranda o valor da variavel que colocar na função.
+&(em função) = passa o valor por referencia, alteranda o valor da variavel que colocar na função, Ex.: function num(&$n).
 
 include = serve para incluir funções externas, Ex.: include "funções.php";
 

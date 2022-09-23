@@ -10,17 +10,15 @@
 <body>
     <div>
         <?php
-           $p = "leite";
-           $pr = "4.5";
-           //echo "O $p custa R$ $pr<br>";
+           $nome = "mateus";
+           $vetor = str_split($nome);
+           print_r($vetor);
 
-           //printf("O %s custa R$ %.2f", $p, $pr);
-
-           $x = [9,5,6,8];
-           //print_r($x);
-           //var_dump($x);
-           //var_export($x);
+           $carros_list = ["civic","honda","lamborghini","volkswagen"];
+           $carros = implode(" ",$carros_list);
+           echo "<br>$carros"
         ?>
+        
     </div>
 </body>
 </html>
