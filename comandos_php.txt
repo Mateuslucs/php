@@ -91,3 +91,35 @@ require = faz a mesma coisa do include, mas quando a função n é achada ela da
 include_once = ele confere se tal arquivo externo foi carregado, se caso ja foi ele n vai carregar dnv, mas se n tiver carregado ele vai carregar.
 
 require_once = faz a msm coisa que o include_once, so muda o fato do erro fatal.
+
+=========================================================================================================================================================================
+CONEXAO COM MYSQL
+
+<?php
+    $servidor = "localhost";
+    $usuario = "root";
+    $senha = "chupeta55";
+    $dbnanme = "sistema";
+
+    $conexao = mysqli_connect($servidor, $usuario, $senha, $dbnanme);
+    if(!$conexao) {
+        die("Houve um problema: ".mysqli_connect_error());
+    }
+?>
+
+<?php
+    include("conection.php");
+    $nome = $_POST["nome"];
+    $esto = $_POST["esto"];
+    $val = $_POST["val"];
+    $pre = $_POST["pre"];
+
+    $sql = "INSERT INTO produtos(id, nome, estoque_uni, validade, preco) VALUES (null,'$nome','$esto','$val','$pre')";
+
+    if(mysqli_query($conexao,$sql)){
+        echo "leite de saco duro cadastrado com sucesso!";
+    }else {
+        echo "error ".mysqli_connect_error();
+    }
+    mysqli_close($conexao);
+?>
