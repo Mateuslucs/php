@@ -116,6 +116,10 @@ sort($array) = vai fazer ficar em ordem.
 rsort($array) = vai deixar em ordem reversa.
 
 asort($array) = vai deixar em ordem mas as posições vai mudar de acordo com os valores.
+
+arsort($array) = vai deixar em ordem decrecente mas as posições vai mudar de acordo com os valores.
+
+ksort($array) = vai colocar as chaves(keys) em ordem.
 =========================================================================================================================================================================
 CONEXAO COM MYSQL
 

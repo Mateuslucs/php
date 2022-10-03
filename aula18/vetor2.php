@@ -10,9 +10,10 @@
 <body>
     <div>
         <?php
-           $v = array("a","b","c","d");
-           
-           print_r($v);
+            $a = 5;
+            $b = 3;
+            $c = ($a>$b)?true:false;
+            print $c;
         ?>
         
     </div>
