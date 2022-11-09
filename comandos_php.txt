@@ -151,3 +151,6 @@ CONEXAO COM MYSQL
     }
     mysqli_close($conexao);
 ?>
+
+tratar erros 
+ini_set(“display_errors”, 0 );
