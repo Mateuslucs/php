@@ -34,6 +34,10 @@ $$n = variavel de variavel, Ex.: $nome = mateus $$nome = eu; resultado $mateus($
 ==============================================================================================================================================
 FUNÇÕES
 
+//DECLARAR A ZONA PARA PEGAR A HORA EXATA
+//date_default_timezone_set('America/Sao_Paulo');
+//date('d/m/Y H:i:s', time());
+
 date() = para pegar data atual, Ex.: $atual = date("d-m-y") ou date("y") = 22 e date("Y") = 2022
 
 date_format() = primeiramente para usar essa função, temos q usar outra q seria o date_creat(). date_creat é usado para voce poder modificar a data q foi recebida de um formulario. Ex.: date_creat($data); date_format($data, 'Y').
