@@ -66,14 +66,20 @@
                     <h2 class="segundario">Credito:</h1>
                     <h1 id="grid_credito"></h1>
                 </div>
-            </div>
+            </div>/**Não Contém
+            Igual a 
+            menor ou igual a
+            menor que
+            maior que
+            intervalo
+             */
             <div class="col-sm-4">
                 <div class="card bg-light text-success">
                     <h2 class="segundario">Saldo:</h1>
                     <h1 id="grid_saldo">{grid_saldo}</h1>
-                    <h2 id="grid_search_label_idmina">Mina: Contém a Mina Goiana</h2>
-                    <h2 id="grid_search_label_idconta">Conta: Não Contém Caixa Diario Mina 1 - lucas</h2>
-                    <h2 id="grid_search_label_datacontabil">menor ou igual a 19/12/2022</h2>
+                    <h2 id="grid_search_label_idmina">Mina: Igual a Mina Goiana</h2>
+                    <h2 id="grid_search_label_idconta">Conta: Igual a Caixa Diario Mina 1 - lucas</h2>
+                    <h2 id="grid_search_label_datacontabil">intervalo 15/12/2022 a 19/12/2022</h2>
                     <h2 id="grid_search_label_formapagamento">gnsdgskgwrkg Dinheiro</h2>
                 </div>
             </div>
@@ -83,10 +89,6 @@
 
     <script>
 
-
-        /**
-         * Função para criar um objeto XMLHTTPRequest
-         */
         function CriaRequest() {
             try{
                 request = new XMLHttpRequest();
@@ -109,35 +111,7 @@
             }else {
                 return request;
             }
-                
-        }
-
-        /**
-         * Função para enviar os dados
-         */
-        function getDados(Data,nomeMina,nomeConta) {
-
-            let xmlreq = CriaRequest();
-
-            // Iniciar uma requisição
-            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta, true);
-
-            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-            xmlreq.onreadystatechange = function(){
-
-                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                if (xmlreq.readyState == 4) {
-
-                    // Verifica se o arquivo foi encontrado com sucesso
-                    if (xmlreq.status == 200) {
-                        return xmlreq.responseText;
-                    }else{
-                        return "Erro: " + xmlreq.statusText;
-                    }
-                }
-            };
             
-            xmlreq.send(null);
         }
 
         function FormataStringData(data) {
@@ -178,7 +152,7 @@
 
             let valor1 = FormataStringData(str.match(reg)[0]);
             let valor2 = FormataStringData(str.match(reg)[1]);
-            Data += `dataContabil between '${valor1} and ${valor2}'`;
+            Data += `dataContabil between '${valor1}' and '${valor2}'`;
 
         }else if(dataContabil.innerText.includes("maior")){
 
@@ -194,318 +168,337 @@
 
 
         if(formaPagamento.innerText.includes("Dinheiro")){
-            if(mina.innerText.includes("Contém")){
-                let posMina = mina.innerText.indexOf("Contém") + 9;
-                let nomeMina = mina.innerText.slice(posMina);
+            if(mina !== null){
+                console.log("entrou na mina diferente de null");
+                if(mina.innerText.includes("Contém")){
+                    let posMina = mina.innerText.indexOf("Contém") + 7;
+                    let nomeMina = mina.innerText.slice(posMina);
 
-                let sinalMina = "diferente";
+                    let sinalMina = "diferente";
+
+                    if(conta !== null){
+                        if(conta.innerText.includes("Contém")){
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
 
 
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "diferente";
-                    
+                        }else if(conta.innerText.includes("Igual")){
+                            let posConta = conta.innerText.indexOf("Igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
 
-                   let xmlreq = CriaRequest();
+                            let sinalConta = "igual";
+                            
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                            let xmlreq = CriaRequest();
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
                         }
-                    };
+                    }else {
 
-                    xmlreq.send(null);
+                        //let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = "";
+
+                        let sinalConta = "";
 
 
+                        let xmlreq = CriaRequest();
 
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
 
-                    let sinalConta = "igual";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                   let xmlreq = CriaRequest();
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
+                        };
+
+                        xmlreq.send(null);
+
+                    }    
+
+                }else if(mina.innerText.includes("Igual")){
+                    console.log("entrou na mina é sinal de igual")
+                    let posMina = mina.innerText.indexOf("Igual") + 8;
+                    let nomeMina = mina.innerText.slice(posMina);
+
+                    let sinalMina = "igual";
+
+                    if(conta !== null){
+                        console.log("entrou na conta dirente de null")
+                        if(conta.innerText.includes("Contém")){
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+
+
+                        }else if(conta.innerText.includes("Igual")){
+                            console.log("entrou onde o sinal da conta é igual")
+                            let posConta = conta.innerText.indexOf("Igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "igual";
+                            
+                        
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
                         }
-                    };
+                    }else {
 
-                    xmlreq.send(null);
+                        //let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = "";
 
-                }else {
+                        let sinalConta = "";
 
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = "";
 
-                    let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
+                        let xmlreq = CriaRequest();
 
-                   let xmlreq = CriaRequest();
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
+                        xmlreq.send(null);
+
+                    }
 
                 }
-
-            }else if(mina.innerText.includes("Igual")){
-                let posMina = mina.innerText.indexOf("Igual") + 8;
-                let nomeMina = mina.innerText.slice(posMina);
-
-                let sinalMina = "igual";
-
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
-
-                    let sinalConta = "diferente";
-                    
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-
-
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
-
-                    let sinalConta = "igual";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-                }else {
-
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = "";
-
-                    let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-                }
-
-
             }else {
-                
+                    
                 //let posMina = mina.innerText.indexOf("Contém") + 9;
                 let nomeMina = "";
 
                 let sinalMina = "";
 
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
+                if(conta !== null){
+                    if(conta.innerText.includes("Contém")){
+                        let posConta = conta.innerText.indexOf("Contém") + 7;
+                        let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "diferente";
-                    
+                        let sinalConta = "diferente";
+                        
 
-                   let xmlreq = CriaRequest();
+                        let xmlreq = CriaRequest();
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
-
+                        xmlreq.send(null);
 
 
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "igual";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
+                    }else if(conta.innerText.includes("Igual")){
+                        let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = conta.innerText.slice(posConta);
 
-                   let xmlreq = CriaRequest();
+                        let sinalConta = "igual";
+                        
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                        let xmlreq = CriaRequest();
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
+
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
+                        xmlreq.send(null);
 
+                    }
                 }else {
 
                     //let posConta = conta.innerText.indexOf("Igual") + 8;
                     let nomeConta = "";
 
                     let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
 
-                   let xmlreq = CriaRequest();
+
+                    let xmlreq = CriaRequest();
 
                     // Iniciar uma requisição
                     xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
@@ -518,6 +511,8 @@
 
                             // Verifica se o arquivo foi encontrado com sucesso
                             if (xmlreq.status == 200) {
+                                console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                console.log(xmlreq.responseText);
                                 res = JSON.parse(xmlreq.responseText);
                                 debito.textContent = res.debito;
                                 credito.textContent = res.credito;
@@ -533,323 +528,348 @@
 
                 }
 
-            }
+                
+            }    
 
         }else if(formaPagamento.innerText.includes("Pix")){
 
-            if(mina.innerText.includes("Contém")){
-                let posMina = mina.innerText.indexOf("Contém") + 9;
-                let nomeMina = mina.innerText.slice(posMina);
+            if(mina !== null){
 
-                let sinalMina = "diferente";
+                if(mina.innerText.includes("Contém")){
+                    let posMina = mina.innerText.indexOf("Contém") + 9;
+                    let nomeMina = mina.innerText.slice(posMina);
+
+                    let sinalMina = "diferente";
+
+                    if(conta !== null){
+                        if(conta.innerText.includes("Contém")){
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+                        
+
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
 
 
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "diferente";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
+                        }else if(conta.innerText.includes("Igual")){
+                            let posConta = conta.innerText.indexOf("Igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
 
-                   let xmlreq = CriaRequest();
+                            let sinalConta = "igual";
+                            
+                        
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+                            let xmlreq = CriaRequest();
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
                         }
-                    };
+                    }else {
 
-                    xmlreq.send(null);
+                        //let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = "";
+
+                        let sinalConta = "";
 
 
 
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
+                        let xmlreq = CriaRequest();
 
-                    let sinalConta = "igual";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
 
-                   let xmlreq = CriaRequest();
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
+                        };
+
+                        xmlreq.send(null);
+
+                    }    
+
+                }else if(mina.innerText.includes("Igual")){
+                    let posMina = mina.innerText.indexOf("Igual") + 8;
+                    let nomeMina = mina.innerText.slice(posMina);
+
+                    let sinalMina = "igual";
+
+                    if(conta !== null){
+                        if(conta.innerText.includes("Contém")){
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+                        
+
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+
+
+                        }else if(conta.innerText.includes("Igual")){
+                            let posConta = conta.innerText.indexOf("Igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "igual";
+                            
+                        
+
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
                         }
-                    };
+                    }else {
 
-                    xmlreq.send(null);
+                        //let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = "";
 
-                }else {
+                        let sinalConta = "";
 
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = "";
 
-                    let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
 
-                   let xmlreq = CriaRequest();
+                        let xmlreq = CriaRequest();
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
+                        xmlreq.send(null);
+
+                    }
 
                 }
-
-            }else if(mina.innerText.includes("Igual")){
-                let posMina = mina.innerText.indexOf("Igual") + 8;
-                let nomeMina = mina.innerText.slice(posMina);
-
-                let sinalMina = "igual";
-
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
-
-                    let sinalConta = "diferente";
-                    
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-
-
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
-
-                    let sinalConta = "igual";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-                }else {
-
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = "";
-
-                    let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-                }
-
-
             }else {
-                
-                //let posMina = mina.innerText.indexOf("Contém") + 9;
+                    
                 let nomeMina = "";
 
                 let sinalMina = "";
 
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
+                if(conta !== null){
+                    if(conta.innerText.includes("Contém")){
+                        let posConta = conta.innerText.indexOf("Contém") + 7;
+                        let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "diferente";
+                        let sinalConta = "diferente";
+                        
                     
 
-                   let xmlreq = CriaRequest();
+                        let xmlreq = CriaRequest();
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
-
+                        xmlreq.send(null);
 
 
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "igual";
+                    }else if(conta.innerText.includes("Igual")){
+                        let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = conta.innerText.slice(posConta);
+
+                        let sinalConta = "igual";
+                        
                     
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
 
-                   let xmlreq = CriaRequest();
+                        let xmlreq = CriaRequest();
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
+                        xmlreq.send(null);
 
+                    }
                 }else {
 
                     //let posConta = conta.innerText.indexOf("Igual") + 8;
                     let nomeConta = "";
 
                     let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
 
-                   let xmlreq = CriaRequest();
+
+
+                    let xmlreq = CriaRequest();
 
                     // Iniciar uma requisição
                     xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
@@ -862,6 +882,8 @@
 
                             // Verifica se o arquivo foi encontrado com sucesso
                             if (xmlreq.status == 200) {
+                                console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                console.log(xmlreq.responseText);
                                 res = JSON.parse(xmlreq.responseText);
                                 debito.textContent = res.debito;
                                 credito.textContent = res.credito;
@@ -881,319 +903,342 @@
 
         }else if(formaPagamento.innerText.includes("Vale")){
 
-            if(mina.innerText.includes("Contém")){
-                let posMina = mina.innerText.indexOf("Contém") + 9;
-                let nomeMina = mina.innerText.slice(posMina);
+            if(mina !== null){
 
-                let sinalMina = "diferente";
+                if(mina.innerText.includes("Contém")){
+                    let posMina = mina.innerText.indexOf("Contém") + 9;
+                    let nomeMina = mina.innerText.slice(posMina);
+
+                    let sinalMina = "diferente";
+
+                    if(conta !== null){
+                        if(conta.innerText.includes("Contém")){
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+                        
+
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
 
 
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "diferente";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
+                        }else if(conta.innerText.includes("Igual")){
+                            let posConta = conta.innerText.indexOf("Igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
 
-                   let xmlreq = CriaRequest();
+                            let sinalConta = "igual";
+                            
+                        
+                            let xmlreq = CriaRequest();
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
                         }
-                    };
+                    }else {
 
-                    xmlreq.send(null);
+                        //let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = "";
+
+                        let sinalConta = "";
 
 
 
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
+                        let xmlreq = CriaRequest();
 
-                    let sinalConta = "igual";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
 
-                   let xmlreq = CriaRequest();
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
+                        };
+
+                        xmlreq.send(null);
+
+                    }
+
+                }else if(mina.innerText.includes("Igual")){
+                    let posMina = mina.innerText.indexOf("Igual") + 8;
+                    let nomeMina = mina.innerText.slice(posMina);
+
+                    let sinalMina = "igual";
+
+                    if(conta !== null){
+                        if(conta.innerText.includes("Contém")){
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+                        
+
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+
+
+                        }else if(conta.innerText.includes("Igual")){
+                            let posConta = conta.innerText.indexOf("Igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "igual";
+                            
+                        
+                            let xmlreq = CriaRequest();
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                        console.log(xmlreq.responseText);
+                                        res = JSON.parse(xmlreq.responseText);
+                                        debito.textContent = res.debito;
+                                        credito.textContent = res.credito;
+                                        saldo.textContent = res.saldo;
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
                         }
-                    };
+                    }else {
 
-                    xmlreq.send(null);
+                        //let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = "";
 
-                }else {
+                        let sinalConta = "";
 
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = "";
 
-                    let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
 
-                   let xmlreq = CriaRequest();
+                        let xmlreq = CriaRequest();
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
+                        xmlreq.send(null);
+
+                    }
 
                 }
-
-            }else if(mina.innerText.includes("Igual")){
-                let posMina = mina.innerText.indexOf("Igual") + 8;
-                let nomeMina = mina.innerText.slice(posMina);
-
-                let sinalMina = "igual";
-
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
-
-                    let sinalConta = "diferente";
-                    
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-
-
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
-
-                    let sinalConta = "igual";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-                }else {
-
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = "";
-
-                    let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
-
-                   let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-                }
-
 
             }else {
-                
+                    
                 //let posMina = mina.innerText.indexOf("Contém") + 9;
                 let nomeMina = "";
 
                 let sinalMina = "";
 
-                if(conta.innerText.includes("Contém")){
-                    let posConta = conta.innerText.indexOf("Contém") + 7;
-                    let nomeConta = conta.innerText.slice(posConta);
+                if(conta !== null){
+                    if(conta.innerText.includes("Contém")){
+                        let posConta = conta.innerText.indexOf("Contém") + 7;
+                        let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "diferente";
+                        let sinalConta = "diferente";
+                        
                     
 
-                   let xmlreq = CriaRequest();
+                        let xmlreq = CriaRequest();
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
-
+                        xmlreq.send(null);
 
 
-                }else if(conta.innerText.includes("Igual")){
-                    let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = conta.innerText.slice(posConta);
 
-                    let sinalConta = "igual";
+                    }else if(conta.innerText.includes("Igual")){
+                        let posConta = conta.innerText.indexOf("Igual") + 8;
+                        let nomeConta = conta.innerText.slice(posConta);
+
+                        let sinalConta = "igual";
+                        
                     
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
+                        let xmlreq = CriaRequest();
 
-                   let xmlreq = CriaRequest();
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
 
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
 
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
 
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                    console.log(xmlreq.responseText);
+                                    res = JSON.parse(xmlreq.responseText);
+                                    debito.textContent = res.debito;
+                                    credito.textContent = res.credito;
+                                    saldo.textContent = res.saldo;
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    xmlreq.send(null);
+                        xmlreq.send(null);
 
+                    }
                 }else {
 
                     //let posConta = conta.innerText.indexOf("Igual") + 8;
                     let nomeConta = "";
 
                     let sinalConta = "";
-                    
-                   // let res = JSON.parse(getDados(Data,nomeMina,nomeConta));
 
-                   let xmlreq = CriaRequest();
+
+
+                    let xmlreq = CriaRequest();
 
                     // Iniciar uma requisição
                     xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
@@ -1206,6 +1251,8 @@
 
                             // Verifica se o arquivo foi encontrado com sucesso
                             if (xmlreq.status == 200) {
+                                console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
+                                console.log(xmlreq.responseText);
                                 res = JSON.parse(xmlreq.responseText);
                                 debito.textContent = res.debito;
                                 credito.textContent = res.credito;
@@ -1222,17 +1269,8 @@
                 }
 
             }
-
         }
         
-        
-
-
-        
-
-        
-
-        //debito.textContent = formaPagamento.innerText;
     </script>
 </body>
 </html>
