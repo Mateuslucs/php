@@ -304,7 +304,7 @@ $sinalConta = $_GET['sinalConta'];*/
 
 
 //$obj = estrato($data_js,$nomeMina_js,$nomeConta_js,$formaPagamento,$sinalMina,$sinalConta);
-$obj = estrato("dataContabil between '2022-12-15' and '2022-12-19'","Mina Goiana","Caixa Diario Mina 1 - lucas","D","igual","igual");
+//$obj = estrato("dataContabil between '2022-12-15' and '2022-12-19'","Mina Goiana","Caixa Diario Mina 1 - lucas","D","igual","igual");
 
 $debito = $obj['debito'];
 $credito = $obj['credito'];
