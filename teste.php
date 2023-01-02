@@ -50,6 +50,11 @@
       #id-opt-tipomovimentacao-1, #id-opt-tipoveiculo-0, #id-opt-idtipominerio-0 {
           margin-left: 0px;
       }
+      .scButton_check {
+        background-color: black;
+        width: 500px;
+        height: 500px;
+      }
     </style>
 </head>
 <body>
@@ -77,14 +82,15 @@
                 <div class="card bg-light text-success">
                     <h2 class="segundario">Saldo:</h1>
                     <h1 id="grid_saldo">{grid_saldo}</h1>
-                    <h2 id="grid_search_label_idmina">Mina: Igual a Mina Goiana</h2>
-                    <h2 id="grid_search_label_idconta">Conta: Igual a Caixa Diario Mina 1 - lucas</h2>
-                    <h2 id="grid_search_label_datacontabil">intervalo 15/12/2022 a 19/12/2022</h2>
-                    <h2 id="grid_search_label_formapagamento">gnsdgskgwrkg Dinheiro</h2>
+                    <h2 id="grid_search_label_idmina">Mina: Não Contém Mina Goiana</h2>
+                    <h2 id="grid_search_label_idconta">Conta: Não Contém conta corrente mina 1 - lucas</h2>
+                    <h2 id="grid_search_label_datacontabil">Intervalo 19/12/2022 a 27/12/2022</h2>
+                    
                 </div>
             </div>
         </div>
-        <div id="Resultado"></div>
+        <div class="scButton_check "></div>
+        <div id="grid-saldoInicial"></div>
     </section>
 
     <script>
@@ -123,7 +129,7 @@
             // Utilizo o .slice(-2) para garantir o formato com 2 digitos.
         }
 
-
+        let saldoInicial = document.getElementById('grid-saldoInicial');
         let debito = document.getElementById('grid_debito');
         let credito = document.getElementById('grid_credito');
         let saldo = document.getElementById('grid_saldo');
@@ -133,51 +139,1548 @@
         let mina = document.getElementById('grid_search_label_idmina');
         let conta = document.getElementById('grid_search_label_idconta');
 
+
+
         let reg = /\b(\d+\/\d+\/\d+)\b/g;
         let str = dataContabil.innerText;
 
         var Data = "";
 
         if(dataContabil.innerText.includes("menor") && dataContabil.innerText.includes("igual")){
-            
-            let valor = FormataStringData(str.match(reg)[0]);
-            Data += `dataContabil <= '${valor}'`;
+                    
+          let valor = FormataStringData(str.match(reg)[0]);
+          Data += `dataContabil menorigual '`+valor+`'`;
 
         }else if(dataContabil.innerText.includes("igual")){
 
-            let valor = FormataStringData(str.match(reg)[0]);
-            Data += `dataContabil = '${valor}'`;
+          let valor = FormataStringData(str.match(reg)[0]);
+          Data += `dataContabil igual '`+valor+`'`;
 
-        }else if(dataContabil.innerText.includes("intervalo")){
+        }else if(dataContabil.innerText.includes("Intervalo")){
 
-            let valor1 = FormataStringData(str.match(reg)[0]);
-            let valor2 = FormataStringData(str.match(reg)[1]);
-            Data += `dataContabil between '${valor1}' and '${valor2}'`;
+          let valor1 = FormataStringData(str.match(reg)[0]);
+          let valor2 = FormataStringData(str.match(reg)[1]);
+          Data += `dataContabil between '`+valor1+`' and '`+valor2+`'`;
 
         }else if(dataContabil.innerText.includes("maior")){
 
-            let valor = FormataStringData(str.match(reg)[0]);
-            Data += `dataContabil > '${valor}'`;
+          let valor = FormataStringData(str.match(reg)[0]);
+          Data += `dataContabil maior '`+valor+`'`;
 
         }else if(dataContabil.innerText.includes("menor")){
 
-            let valor = FormataStringData(str.match(reg)[0]);
-            Data += `dataContabil < '${valor}'`;
+          let valor = FormataStringData(str.match(reg)[0]);
+          Data += `dataContabil menor '`+valor+`'`;
 
         }
 
+        if(formaPagamento !== null){
 
-        if(formaPagamento.innerText.includes("Dinheiro")){
+            console.log("forma de pagamento diferente de null");
+
+            if(formaPagamento.innerText.includes("Dinheiro")){
+
+                console.log("forma de pagamento em Dinheiro");
+
+                if(mina !== null){
+
+                    console.log("entrou na mina diferente de null");
+
+                    if(mina.innerText.includes("Contém")){
+
+                        console.log("entrou em diferente da mina escolhida")
+
+                        let posMina = mina.innerText.indexOf("Contém") + 7;
+                        let nomeMina = mina.innerText.slice(posMina);
+
+                        let sinalMina = "diferente";
+
+                        if(conta !== null){
+
+                            console.log("conta diferente de null")
+
+                            if(conta.innerText.includes("Contém")){
+
+                                console.log("entrou em diferente da conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("Contém") + 7;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "diferente";
+                                
+
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+
+                            }else if(conta.innerText.includes("igual")){
+
+                                console.log("entrou em igual a conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("igual") + 8;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "igual";
+                                
+
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+                            }
+                        }else {
+
+                            console.log("entrou em conta null");
+                            //let posConta = conta.innerText.indexOf("Igual") + 8;
+                            let nomeConta = "";
+
+                            let sinalConta = "";
+
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }    
+
+                    }else if(mina.innerText.includes("igual")){
+
+                        console.log("entrou em igual a mina escolhida");
+
+                        let posMina = mina.innerText.indexOf("igual") + 8;
+                        let nomeMina = mina.innerText.slice(posMina);
+
+                        let sinalMina = "igual";
+
+                        if(conta !== null){
+
+                            console.log("entrou na conta dirente de null");
+
+                            if(conta.innerText.includes("Contém")){
+
+                                console.log("entrou em diferente da conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("Contém") + 7;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "diferente";
+                                
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+
+
+                            }else if(conta.innerText.includes("igual")){
+
+                                console.log("entrou em igual a conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("igual") + 8;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "igual";
+                                
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+                            }
+                        }else {
+
+                            console.log("entrou na conta igual a null");
+
+                            let nomeConta = "";
+
+                            let sinalConta = "";
+
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }
+
+                    }
+
+                }else {
+                        
+                    console.log("entrou na mina igual a null");
+
+                    let nomeMina = "";
+
+                    let sinalMina = "";
+
+                    if(conta !== null){
+
+                        console.log("entrou em conta diferente de null");
+
+                        if(conta.innerText.includes("Contém")){
+
+                            console.log("entrou em diferente da conta escolhida");
+
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+
+
+                        }else if(conta.innerText.includes("igual")){
+
+                            console.log("entrou em igual a conta escolhida");
+
+                            let posConta = conta.innerText.indexOf("igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "igual";
+                            
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }
+
+                    }else {
+
+                        console.log("entrou em conta igual a null");
+
+                        let nomeConta = "";
+
+                        let sinalConta = "";
+
+
+                        let xmlreq = CriaRequest();
+
+                        console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E")
+
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=E", true);
+
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
+
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
+
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    res = xmlreq.responseText;
+                                
+                                    console.log(res);
+                                    let valor = [];
+
+                                    for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                        valor.push(match[1]) 
+                                    }
+
+                                    debito.textContent = valor[0];
+                                    credito.textContent = valor[1];
+                                    saldo.textContent = valor[2];
+                                    saldoInicial.textContent = valor[3];
+                                    
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
+                            }
+                        };
+
+                        xmlreq.send(null);
+
+                    }
+  
+                } 
+
+            }else if(formaPagamento.innerText.includes("Pix")){
+
+                console.log("forma de pagamento em Pix");
+
+                if(mina !== null){
+
+                    console.log("entrou em mina diferente de null");
+
+                    if(mina.innerText.includes("Contém")){
+
+                        console.log("entrou em diferente da mina escolhida");
+
+                        let posMina = mina.innerText.indexOf("Contém") + 7;
+                        let nomeMina = mina.innerText.slice(posMina);
+
+                        let sinalMina = "diferente";
+
+                        if(conta !== null){
+
+                            console.log("entrou em conta diferente de null");
+
+                            if(conta.innerText.includes("Contém")){
+
+                                console.log("entrou em deferente da conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("Contém") + 7;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "diferente";
+                                
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+
+
+                            }else if(conta.innerText.includes("igual")){
+
+                                console.log("entrou em igual a conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("igual") + 8;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "igual";
+                                
+
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+                            }
+                        }else {
+
+                            console.log("entrou em conta igual a null");
+
+                            let nomeConta = "";
+
+                            let sinalConta = "";
+
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }    
+
+                    }else if(mina.innerText.includes("igual")){
+
+                        console.log("entrou em igual a mina escolhida");
+
+                        let posMina = mina.innerText.indexOf("igual") + 8;
+                        let nomeMina = mina.innerText.slice(posMina);
+
+                        let sinalMina = "igual";
+
+                        if(conta !== null){
+
+                            console.log("entrou em conta diferente de null");
+
+                            if(conta.innerText.includes("Contém")){
+
+                                console.log("entrou em diferente da conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("Contém") + 7;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "diferente";
+                                
+
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+
+
+                            }else if(conta.innerText.includes("igual")){
+
+                                console.log("entrou em igual a conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("igual") + 8;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "igual";
+                                
+
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+                            }
+                        }else {
+
+                            console.log("entrou em conta igual a null");
+
+                            let nomeConta = "";
+
+                            let sinalConta = "";
+
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }
+
+                    }
+                }else {
+                    
+                    console.log("entrou em mina igual a null");
+
+                    let nomeMina = "";
+
+                    let sinalMina = "";
+
+                    if(conta !== null){
+
+                        console.log("entrou em conta diferente de null");
+
+                        if(conta.innerText.includes("Contém")){
+
+                            console.log("entrou em diferente a conta escolhida");
+
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+
+
+                        }else if(conta.innerText.includes("igual")){
+
+                            console.log("entrou em igual a conta escolhida");
+
+                            let posConta = conta.innerText.indexOf("igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "igual";
+                            
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }
+
+                    }else {
+
+                        console.log("entrou em conta igual a null");
+
+                        let nomeConta = "";
+
+                        let sinalConta = "";
+
+
+                        let xmlreq = CriaRequest();
+
+                        console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P")
+
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
+
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
+
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
+
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    res = xmlreq.responseText;
+                                
+                                    console.log(res);
+                                    let valor = [];
+
+                                    for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                        valor.push(match[1]) 
+                                    }
+
+                                    debito.textContent = valor[0];
+                                    credito.textContent = valor[1];
+                                    saldo.textContent = valor[2];
+                                    saldoInicial.textContent = valor[3];
+                                    
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
+                            }
+                        };
+
+                        xmlreq.send(null);
+
+                    }
+
+                }
+
+            }else if(formaPagamento.innerText.includes("Vale")){
+
+                console.log("forma de pagamento em Vale");
+
+                if(mina !== null){
+
+                    console.log("entrou em mina diferente de null");
+
+                    if(mina.innerText.includes("Contém")){
+
+                        console.log("entrou em diferente da mina escolhida");
+
+                        let posMina = mina.innerText.indexOf("Contém") + 7;
+                        let nomeMina = mina.innerText.slice(posMina);
+
+                        let sinalMina = "diferente";
+
+                        if(conta !== null){
+
+                            console.log("entrou em conta diferente de null");
+
+                            if(conta.innerText.includes("Contém")){
+
+                                console.log("entrou em deferente da conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("Contém") + 7;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "diferente";
+                                
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+
+
+                            }else if(conta.innerText.includes("igual")){
+
+                                console.log("entrou em igual a conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("igual") + 8;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "igual";
+                                
+
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+                            }
+                        }else {
+
+                            console.log("entrou em conta igual a null");
+
+                            let nomeConta = "";
+
+                            let sinalConta = "";
+
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }    
+
+                    }else if(mina.innerText.includes("igual")){
+
+                        console.log("entrou em igual a mina escolhida");
+
+                        let posMina = mina.innerText.indexOf("igual") + 8;
+                        let nomeMina = mina.innerText.slice(posMina);
+
+                        let sinalMina = "igual";
+
+                        if(conta !== null){
+
+                            console.log("entrou em conta diferente de null");
+
+                            if(conta.innerText.includes("Contém")){
+
+                                console.log("entrou em diferente da conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("Contém") + 7;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "diferente";
+                                
+
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+
+
+                            }else if(conta.innerText.includes("igual")){
+
+                                console.log("entrou em igual a conta escolhida");
+
+                                let posConta = conta.innerText.indexOf("igual") + 8;
+                                let nomeConta = conta.innerText.slice(posConta);
+
+                                let sinalConta = "igual";
+                                
+
+                                let xmlreq = CriaRequest();
+
+                                console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                                // Iniciar uma requisição
+                                xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                                // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                                xmlreq.onreadystatechange = function(){
+
+                                    // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                    if (xmlreq.readyState == 4) {
+
+                                        // Verifica se o arquivo foi encontrado com sucesso
+                                        if (xmlreq.status == 200) {
+                                            res = xmlreq.responseText;
+                                        
+                                            console.log(res);
+                                            let valor = [];
+
+                                            for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                                valor.push(match[1]) 
+                                            }
+
+                                            debito.textContent = valor[0];
+                                            credito.textContent = valor[1];
+                                            saldo.textContent = valor[2];
+                                            saldoInicial.textContent = valor[3];
+                                            
+                                        }else{
+                                            res = xmlreq.statusText;
+                                            console.log(res);
+                                        }
+                                    }
+                                };
+
+                                xmlreq.send(null);
+
+                            }
+                        }else {
+
+                            console.log("entrou em conta igual a null");
+
+                            let nomeConta = "";
+
+                            let sinalConta = "";
+
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }
+
+                    }
+                }else {
+
+                    console.log("entrou em mina igual a null");
+
+                    let nomeMina = "";
+
+                    let sinalMina = "";
+
+                    if(conta !== null){
+
+                        console.log("entrou em conta diferente de null");
+
+                        if(conta.innerText.includes("Contém")){
+
+                            console.log("entrou em diferente a conta escolhida");
+
+                            let posConta = conta.innerText.indexOf("Contém") + 7;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "diferente";
+                            
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+
+
+                        }else if(conta.innerText.includes("igual")){
+
+                            console.log("entrou em igual a conta escolhida");
+
+                            let posConta = conta.innerText.indexOf("igual") + 8;
+                            let nomeConta = conta.innerText.slice(posConta);
+
+                            let sinalConta = "igual";
+                            
+
+                            let xmlreq = CriaRequest();
+
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                            // Iniciar uma requisição
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                            xmlreq.onreadystatechange = function(){
+
+                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                                if (xmlreq.readyState == 4) {
+
+                                    // Verifica se o arquivo foi encontrado com sucesso
+                                    if (xmlreq.status == 200) {
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
+                                    }else{
+                                        res = xmlreq.statusText;
+                                        console.log(res);
+                                    }
+                                }
+                            };
+
+                            xmlreq.send(null);
+
+                        }
+
+                    }else {
+
+                        console.log("entrou em conta igual a null");
+
+                        let nomeConta = "";
+
+                        let sinalConta = "";
+
+
+                        let xmlreq = CriaRequest();
+
+                        console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V")
+
+                        // Iniciar uma requisição
+                        xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
+
+                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
+                        xmlreq.onreadystatechange = function(){
+
+                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
+                            if (xmlreq.readyState == 4) {
+
+                                // Verifica se o arquivo foi encontrado com sucesso
+                                if (xmlreq.status == 200) {
+                                    res = xmlreq.responseText;
+                                
+                                    console.log(res);
+                                    let valor = [];
+
+                                    for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                        valor.push(match[1]) 
+                                    }
+
+                                    debito.textContent = valor[0];
+                                    credito.textContent = valor[1];
+                                    saldo.textContent = valor[2];
+                                    saldoInicial.textContent = valor[3];
+                                    
+                                }else{
+                                    res = xmlreq.statusText;
+                                    console.log(res);
+                                }
+                            }
+                        };
+
+                        xmlreq.send(null);
+
+                    }
+
+                }
+            }
+        }else {
+
+            console.log("forma de pagamento igual a null");
+
             if(mina !== null){
+
                 console.log("entrou na mina diferente de null");
+
                 if(mina.innerText.includes("Contém")){
+
+                    console.log("entrou em diferente da mina escolhida")
+
                     let posMina = mina.innerText.indexOf("Contém") + 7;
                     let nomeMina = mina.innerText.slice(posMina);
 
                     let sinalMina = "diferente";
 
                     if(conta !== null){
+
+                        console.log("conta diferente de null")
+
                         if(conta.innerText.includes("Contém")){
+
+                            console.log("entrou em diferente da conta escolhida");
+
                             let posConta = conta.innerText.indexOf("Contém") + 7;
                             let nomeConta = conta.innerText.slice(posConta);
 
@@ -186,8 +1689,10 @@
 
                             let xmlreq = CriaRequest();
 
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                             // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                             // Atribui uma função para ser executada sempre que houver uma mudança de ado
                             xmlreq.onreadystatechange = function(){
@@ -197,12 +1702,20 @@
 
                                     // Verifica se o arquivo foi encontrado com sucesso
                                     if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
                                     }else{
                                         res = xmlreq.statusText;
                                         console.log(res);
@@ -213,9 +1726,11 @@
                             xmlreq.send(null);
 
 
+                        }else if(conta.innerText.includes("igual")){
 
-                        }else if(conta.innerText.includes("Igual")){
-                            let posConta = conta.innerText.indexOf("Igual") + 8;
+                            console.log("entrou em igual a conta escolhida");
+
+                            let posConta = conta.innerText.indexOf("igual") + 8;
                             let nomeConta = conta.innerText.slice(posConta);
 
                             let sinalConta = "igual";
@@ -223,8 +1738,10 @@
 
                             let xmlreq = CriaRequest();
 
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                             // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                             // Atribui uma função para ser executada sempre que houver uma mudança de ado
                             xmlreq.onreadystatechange = function(){
@@ -234,12 +1751,20 @@
 
                                     // Verifica se o arquivo foi encontrado com sucesso
                                     if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
                                     }else{
                                         res = xmlreq.statusText;
                                         console.log(res);
@@ -252,6 +1777,7 @@
                         }
                     }else {
 
+                        console.log("entrou em conta null");
                         //let posConta = conta.innerText.indexOf("Igual") + 8;
                         let nomeConta = "";
 
@@ -260,8 +1786,10 @@
 
                         let xmlreq = CriaRequest();
 
+                        console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                         // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                        xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                         // Atribui uma função para ser executada sempre que houver uma mudança de ado
                         xmlreq.onreadystatechange = function(){
@@ -271,12 +1799,20 @@
 
                                 // Verifica se o arquivo foi encontrado com sucesso
                                 if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
+                                    res = xmlreq.responseText;
+                                
+                                    console.log(res);
+                                    let valor = [];
+
+                                    for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                        valor.push(match[1]) 
+                                    }
+
+                                    debito.textContent = valor[0];
+                                    credito.textContent = valor[1];
+                                    saldo.textContent = valor[2];
+                                    saldoInicial.textContent = valor[3];
+                                    
                                 }else{
                                     res = xmlreq.statusText;
                                     console.log(res);
@@ -288,26 +1824,34 @@
 
                     }    
 
-                }else if(mina.innerText.includes("Igual")){
-                    console.log("entrou na mina é sinal de igual")
-                    let posMina = mina.innerText.indexOf("Igual") + 8;
+                }else if(mina.innerText.includes("igual")){
+
+                    console.log("entrou em igual a mina escolhida");
+
+                    let posMina = mina.innerText.indexOf("igual") + 8;
                     let nomeMina = mina.innerText.slice(posMina);
 
                     let sinalMina = "igual";
 
                     if(conta !== null){
-                        console.log("entrou na conta dirente de null")
+
+                        console.log("entrou na conta dirente de null");
+
                         if(conta.innerText.includes("Contém")){
+
+                            console.log("entrou em diferente da conta escolhida");
+
                             let posConta = conta.innerText.indexOf("Contém") + 7;
                             let nomeConta = conta.innerText.slice(posConta);
 
                             let sinalConta = "diferente";
                             
-
                             let xmlreq = CriaRequest();
 
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                             // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                             // Atribui uma função para ser executada sempre que houver uma mudança de ado
                             xmlreq.onreadystatechange = function(){
@@ -317,12 +1861,20 @@
 
                                     // Verifica se o arquivo foi encontrado com sucesso
                                     if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
                                     }else{
                                         res = xmlreq.statusText;
                                         console.log(res);
@@ -334,32 +1886,44 @@
 
 
 
-                        }else if(conta.innerText.includes("Igual")){
-                            console.log("entrou onde o sinal da conta é igual")
-                            let posConta = conta.innerText.indexOf("Igual") + 8;
+                        }else if(conta.innerText.includes("igual")){
+
+                            console.log("entrou em igual a conta escolhida");
+
+                            let posConta = conta.innerText.indexOf("igual") + 8;
                             let nomeConta = conta.innerText.slice(posConta);
 
                             let sinalConta = "igual";
                             
-                        
                             let xmlreq = CriaRequest();
 
+                            console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                             // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                            xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                             // Atribui uma função para ser executada sempre que houver uma mudança de ado
                             xmlreq.onreadystatechange = function(){
+
                                 // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
                                 if (xmlreq.readyState == 4) {
 
                                     // Verifica se o arquivo foi encontrado com sucesso
                                     if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
+                                        res = xmlreq.responseText;
+                                    
+                                        console.log(res);
+                                        let valor = [];
+
+                                        for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                            valor.push(match[1]) 
+                                        }
+
+                                        debito.textContent = valor[0];
+                                        credito.textContent = valor[1];
+                                        saldo.textContent = valor[2];
+                                        saldoInicial.textContent = valor[3];
+                                        
                                     }else{
                                         res = xmlreq.statusText;
                                         console.log(res);
@@ -372,7 +1936,8 @@
                         }
                     }else {
 
-                        //let posConta = conta.innerText.indexOf("Igual") + 8;
+                        console.log("entrou na conta igual a null");
+
                         let nomeConta = "";
 
                         let sinalConta = "";
@@ -380,8 +1945,10 @@
 
                         let xmlreq = CriaRequest();
 
+                        console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                         // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                        xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                         // Atribui uma função para ser executada sempre que houver uma mudança de ado
                         xmlreq.onreadystatechange = function(){
@@ -391,12 +1958,20 @@
 
                                 // Verifica se o arquivo foi encontrado com sucesso
                                 if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
+                                    res = xmlreq.responseText;
+                                
+                                    console.log(res);
+                                    let valor = [];
+
+                                    for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                        valor.push(match[1]) 
+                                    }
+
+                                    debito.textContent = valor[0];
+                                    credito.textContent = valor[1];
+                                    saldo.textContent = valor[2];
+                                    saldoInicial.textContent = valor[3];
+                                    
                                 }else{
                                     res = xmlreq.statusText;
                                     console.log(res);
@@ -409,15 +1984,23 @@
                     }
 
                 }
+
             }else {
                     
-                //let posMina = mina.innerText.indexOf("Contém") + 9;
+                console.log("entrou na mina igual a null");
+
                 let nomeMina = "";
 
                 let sinalMina = "";
 
                 if(conta !== null){
+
+                    console.log("entrou em conta diferente de null");
+
                     if(conta.innerText.includes("Contém")){
+
+                        console.log("entrou em diferente da conta escolhida");
+
                         let posConta = conta.innerText.indexOf("Contém") + 7;
                         let nomeConta = conta.innerText.slice(posConta);
 
@@ -426,8 +2009,10 @@
 
                         let xmlreq = CriaRequest();
 
+                        console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                         // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                        xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                         // Atribui uma função para ser executada sempre que houver uma mudança de ado
                         xmlreq.onreadystatechange = function(){
@@ -437,12 +2022,20 @@
 
                                 // Verifica se o arquivo foi encontrado com sucesso
                                 if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
+                                    res = xmlreq.responseText;
+                                
+                                    console.log(res);
+                                    let valor = [];
+
+                                    for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                        valor.push(match[1]) 
+                                    }
+
+                                    debito.textContent = valor[0];
+                                    credito.textContent = valor[1];
+                                    saldo.textContent = valor[2];
+                                    saldoInicial.textContent = valor[3];
+                                    
                                 }else{
                                     res = xmlreq.statusText;
                                     console.log(res);
@@ -454,8 +2047,11 @@
 
 
 
-                    }else if(conta.innerText.includes("Igual")){
-                        let posConta = conta.innerText.indexOf("Igual") + 8;
+                    }else if(conta.innerText.includes("igual")){
+
+                        console.log("entrou em igual a conta escolhida");
+
+                        let posConta = conta.innerText.indexOf("igual") + 8;
                         let nomeConta = conta.innerText.slice(posConta);
 
                         let sinalConta = "igual";
@@ -463,8 +2059,10 @@
 
                         let xmlreq = CriaRequest();
 
+                        console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                         // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                        xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                         // Atribui uma função para ser executada sempre que houver uma mudança de ado
                         xmlreq.onreadystatechange = function(){
@@ -474,12 +2072,20 @@
 
                                 // Verifica se o arquivo foi encontrado com sucesso
                                 if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
+                                    res = xmlreq.responseText;
+                                
+                                    console.log(res);
+                                    let valor = [];
+
+                                    for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                        valor.push(match[1]) 
+                                    }
+
+                                    debito.textContent = valor[0];
+                                    credito.textContent = valor[1];
+                                    saldo.textContent = valor[2];
+                                    saldoInicial.textContent = valor[3];
+                                    
                                 }else{
                                     res = xmlreq.statusText;
                                     console.log(res);
@@ -490,9 +2096,11 @@
                         xmlreq.send(null);
 
                     }
+
                 }else {
 
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
+                    console.log("entrou em conta igual a null");
+
                     let nomeConta = "";
 
                     let sinalConta = "";
@@ -500,8 +2108,10 @@
 
                     let xmlreq = CriaRequest();
 
+                    console.log("requisição: http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=")
+
                     // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=D", true);
+                    xmlreq.open("GET", "http://165.232.148.251/scriptcase/app/BA_SANTANA3/consulta/?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=", true);
 
                     // Atribui uma função para ser executada sempre que houver uma mudança de ado
                     xmlreq.onreadystatechange = function(){
@@ -511,752 +2121,20 @@
 
                             // Verifica se o arquivo foi encontrado com sucesso
                             if (xmlreq.status == 200) {
-                                console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                console.log(xmlreq.responseText);
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
+                                res = xmlreq.responseText;
+                            
                                 console.log(res);
-                            }
-                        }
-                    };
+                                let valor = [];
 
-                    xmlreq.send(null);
-
-                }
-
-                
-            }    
-
-        }else if(formaPagamento.innerText.includes("Pix")){
-
-            if(mina !== null){
-
-                if(mina.innerText.includes("Contém")){
-                    let posMina = mina.innerText.indexOf("Contém") + 9;
-                    let nomeMina = mina.innerText.slice(posMina);
-
-                    let sinalMina = "diferente";
-
-                    if(conta !== null){
-                        if(conta.innerText.includes("Contém")){
-                            let posConta = conta.innerText.indexOf("Contém") + 7;
-                            let nomeConta = conta.innerText.slice(posConta);
-
-                            let sinalConta = "diferente";
-                            
-                        
-
-                            let xmlreq = CriaRequest();
-
-                            // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                            xmlreq.onreadystatechange = function(){
-
-                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                                if (xmlreq.readyState == 4) {
-
-                                    // Verifica se o arquivo foi encontrado com sucesso
-                                    if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
-                                    }else{
-                                        res = xmlreq.statusText;
-                                        console.log(res);
-                                    }
+                                for (let match of res.matchAll(/\(([^)]+)\)/g)) {
+                                    valor.push(match[1]) 
                                 }
-                            };
 
-                            xmlreq.send(null);
-
-
-
-                        }else if(conta.innerText.includes("Igual")){
-                            let posConta = conta.innerText.indexOf("Igual") + 8;
-                            let nomeConta = conta.innerText.slice(posConta);
-
-                            let sinalConta = "igual";
-                            
-                        
-
-                            let xmlreq = CriaRequest();
-
-                            // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                            xmlreq.onreadystatechange = function(){
-
-                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                                if (xmlreq.readyState == 4) {
-
-                                    // Verifica se o arquivo foi encontrado com sucesso
-                                    if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
-                                    }else{
-                                        res = xmlreq.statusText;
-                                        console.log(res);
-                                    }
-                                }
-                            };
-
-                            xmlreq.send(null);
-
-                        }
-                    }else {
-
-                        //let posConta = conta.innerText.indexOf("Igual") + 8;
-                        let nomeConta = "";
-
-                        let sinalConta = "";
-
-
-
-                        let xmlreq = CriaRequest();
-
-                        // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                        xmlreq.onreadystatechange = function(){
-
-                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                            if (xmlreq.readyState == 4) {
-
-                                // Verifica se o arquivo foi encontrado com sucesso
-                                if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
-                                }else{
-                                    res = xmlreq.statusText;
-                                    console.log(res);
-                                }
-                            }
-                        };
-
-                        xmlreq.send(null);
-
-                    }    
-
-                }else if(mina.innerText.includes("Igual")){
-                    let posMina = mina.innerText.indexOf("Igual") + 8;
-                    let nomeMina = mina.innerText.slice(posMina);
-
-                    let sinalMina = "igual";
-
-                    if(conta !== null){
-                        if(conta.innerText.includes("Contém")){
-                            let posConta = conta.innerText.indexOf("Contém") + 7;
-                            let nomeConta = conta.innerText.slice(posConta);
-
-                            let sinalConta = "diferente";
-                            
-                        
-
-                            let xmlreq = CriaRequest();
-
-                            // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                            xmlreq.onreadystatechange = function(){
-
-                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                                if (xmlreq.readyState == 4) {
-
-                                    // Verifica se o arquivo foi encontrado com sucesso
-                                    if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
-                                    }else{
-                                        res = xmlreq.statusText;
-                                        console.log(res);
-                                    }
-                                }
-                            };
-
-                            xmlreq.send(null);
-
-
-
-                        }else if(conta.innerText.includes("Igual")){
-                            let posConta = conta.innerText.indexOf("Igual") + 8;
-                            let nomeConta = conta.innerText.slice(posConta);
-
-                            let sinalConta = "igual";
-                            
-                        
-
-                            let xmlreq = CriaRequest();
-
-                            // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                            xmlreq.onreadystatechange = function(){
-
-                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                                if (xmlreq.readyState == 4) {
-
-                                    // Verifica se o arquivo foi encontrado com sucesso
-                                    if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
-                                    }else{
-                                        res = xmlreq.statusText;
-                                        console.log(res);
-                                    }
-                                }
-                            };
-
-                            xmlreq.send(null);
-
-                        }
-                    }else {
-
-                        //let posConta = conta.innerText.indexOf("Igual") + 8;
-                        let nomeConta = "";
-
-                        let sinalConta = "";
-
-
-
-                        let xmlreq = CriaRequest();
-
-                        // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                        xmlreq.onreadystatechange = function(){
-
-                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                            if (xmlreq.readyState == 4) {
-
-                                // Verifica se o arquivo foi encontrado com sucesso
-                                if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
-                                }else{
-                                    res = xmlreq.statusText;
-                                    console.log(res);
-                                }
-                            }
-                        };
-
-                        xmlreq.send(null);
-
-                    }
-
-                }
-            }else {
-                    
-                let nomeMina = "";
-
-                let sinalMina = "";
-
-                if(conta !== null){
-                    if(conta.innerText.includes("Contém")){
-                        let posConta = conta.innerText.indexOf("Contém") + 7;
-                        let nomeConta = conta.innerText.slice(posConta);
-
-                        let sinalConta = "diferente";
-                        
-                    
-
-                        let xmlreq = CriaRequest();
-
-                        // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                        xmlreq.onreadystatechange = function(){
-
-                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                            if (xmlreq.readyState == 4) {
-
-                                // Verifica se o arquivo foi encontrado com sucesso
-                                if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
-                                }else{
-                                    res = xmlreq.statusText;
-                                    console.log(res);
-                                }
-                            }
-                        };
-
-                        xmlreq.send(null);
-
-
-
-                    }else if(conta.innerText.includes("Igual")){
-                        let posConta = conta.innerText.indexOf("Igual") + 8;
-                        let nomeConta = conta.innerText.slice(posConta);
-
-                        let sinalConta = "igual";
-                        
-                    
-
-                        let xmlreq = CriaRequest();
-
-                        // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                        xmlreq.onreadystatechange = function(){
-
-                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                            if (xmlreq.readyState == 4) {
-
-                                // Verifica se o arquivo foi encontrado com sucesso
-                                if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
-                                }else{
-                                    res = xmlreq.statusText;
-                                    console.log(res);
-                                }
-                            }
-                        };
-
-                        xmlreq.send(null);
-
-                    }
-                }else {
-
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = "";
-
-                    let sinalConta = "";
-
-
-
-                    let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=P", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                console.log(xmlreq.responseText);
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
-                            }else{
-                                res = xmlreq.statusText;
-                                console.log(res);
-                            }
-                        }
-                    };
-
-                    xmlreq.send(null);
-
-                }
-
-            }
-
-        }else if(formaPagamento.innerText.includes("Vale")){
-
-            if(mina !== null){
-
-                if(mina.innerText.includes("Contém")){
-                    let posMina = mina.innerText.indexOf("Contém") + 9;
-                    let nomeMina = mina.innerText.slice(posMina);
-
-                    let sinalMina = "diferente";
-
-                    if(conta !== null){
-                        if(conta.innerText.includes("Contém")){
-                            let posConta = conta.innerText.indexOf("Contém") + 7;
-                            let nomeConta = conta.innerText.slice(posConta);
-
-                            let sinalConta = "diferente";
-                            
-                        
-
-                            let xmlreq = CriaRequest();
-
-                            // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                            xmlreq.onreadystatechange = function(){
-
-                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                                if (xmlreq.readyState == 4) {
-
-                                    // Verifica se o arquivo foi encontrado com sucesso
-                                    if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
-                                    }else{
-                                        res = xmlreq.statusText;
-                                        console.log(res);
-                                    }
-                                }
-                            };
-
-                            xmlreq.send(null);
-
-
-
-                        }else if(conta.innerText.includes("Igual")){
-                            let posConta = conta.innerText.indexOf("Igual") + 8;
-                            let nomeConta = conta.innerText.slice(posConta);
-
-                            let sinalConta = "igual";
-                            
-                        
-                            let xmlreq = CriaRequest();
-
-                            // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                            xmlreq.onreadystatechange = function(){
-
-                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                                if (xmlreq.readyState == 4) {
-
-                                    // Verifica se o arquivo foi encontrado com sucesso
-                                    if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
-                                    }else{
-                                        res = xmlreq.statusText;
-                                        console.log(res);
-                                    }
-                                }
-                            };
-
-                            xmlreq.send(null);
-
-                        }
-                    }else {
-
-                        //let posConta = conta.innerText.indexOf("Igual") + 8;
-                        let nomeConta = "";
-
-                        let sinalConta = "";
-
-
-
-                        let xmlreq = CriaRequest();
-
-                        // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                        xmlreq.onreadystatechange = function(){
-
-                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                            if (xmlreq.readyState == 4) {
-
-                                // Verifica se o arquivo foi encontrado com sucesso
-                                if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
-                                }else{
-                                    res = xmlreq.statusText;
-                                    console.log(res);
-                                }
-                            }
-                        };
-
-                        xmlreq.send(null);
-
-                    }
-
-                }else if(mina.innerText.includes("Igual")){
-                    let posMina = mina.innerText.indexOf("Igual") + 8;
-                    let nomeMina = mina.innerText.slice(posMina);
-
-                    let sinalMina = "igual";
-
-                    if(conta !== null){
-                        if(conta.innerText.includes("Contém")){
-                            let posConta = conta.innerText.indexOf("Contém") + 7;
-                            let nomeConta = conta.innerText.slice(posConta);
-
-                            let sinalConta = "diferente";
-                            
-                        
-
-                            let xmlreq = CriaRequest();
-
-                            // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                            xmlreq.onreadystatechange = function(){
-
-                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                                if (xmlreq.readyState == 4) {
-
-                                    // Verifica se o arquivo foi encontrado com sucesso
-                                    if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
-                                    }else{
-                                        res = xmlreq.statusText;
-                                        console.log(res);
-                                    }
-                                }
-                            };
-
-                            xmlreq.send(null);
-
-
-
-                        }else if(conta.innerText.includes("Igual")){
-                            let posConta = conta.innerText.indexOf("Igual") + 8;
-                            let nomeConta = conta.innerText.slice(posConta);
-
-                            let sinalConta = "igual";
-                            
-                        
-                            let xmlreq = CriaRequest();
-
-                            // Iniciar uma requisição
-                            xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                            // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                            xmlreq.onreadystatechange = function(){
-
-                                // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                                if (xmlreq.readyState == 4) {
-
-                                    // Verifica se o arquivo foi encontrado com sucesso
-                                    if (xmlreq.status == 200) {
-                                        console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                        console.log(xmlreq.responseText);
-                                        res = JSON.parse(xmlreq.responseText);
-                                        debito.textContent = res.debito;
-                                        credito.textContent = res.credito;
-                                        saldo.textContent = res.saldo;
-                                    }else{
-                                        res = xmlreq.statusText;
-                                        console.log(res);
-                                    }
-                                }
-                            };
-
-                            xmlreq.send(null);
-
-                        }
-                    }else {
-
-                        //let posConta = conta.innerText.indexOf("Igual") + 8;
-                        let nomeConta = "";
-
-                        let sinalConta = "";
-
-
-
-                        let xmlreq = CriaRequest();
-
-                        // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                        xmlreq.onreadystatechange = function(){
-
-                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                            if (xmlreq.readyState == 4) {
-
-                                // Verifica se o arquivo foi encontrado com sucesso
-                                if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
-                                }else{
-                                    res = xmlreq.statusText;
-                                    console.log(res);
-                                }
-                            }
-                        };
-
-                        xmlreq.send(null);
-
-                    }
-
-                }
-
-            }else {
-                    
-                //let posMina = mina.innerText.indexOf("Contém") + 9;
-                let nomeMina = "";
-
-                let sinalMina = "";
-
-                if(conta !== null){
-                    if(conta.innerText.includes("Contém")){
-                        let posConta = conta.innerText.indexOf("Contém") + 7;
-                        let nomeConta = conta.innerText.slice(posConta);
-
-                        let sinalConta = "diferente";
-                        
-                    
-
-                        let xmlreq = CriaRequest();
-
-                        // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                        xmlreq.onreadystatechange = function(){
-
-                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                            if (xmlreq.readyState == 4) {
-
-                                // Verifica se o arquivo foi encontrado com sucesso
-                                if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
-                                }else{
-                                    res = xmlreq.statusText;
-                                    console.log(res);
-                                }
-                            }
-                        };
-
-                        xmlreq.send(null);
-
-
-
-                    }else if(conta.innerText.includes("Igual")){
-                        let posConta = conta.innerText.indexOf("Igual") + 8;
-                        let nomeConta = conta.innerText.slice(posConta);
-
-                        let sinalConta = "igual";
-                        
-                    
-                        let xmlreq = CriaRequest();
-
-                        // Iniciar uma requisição
-                        xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                        // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                        xmlreq.onreadystatechange = function(){
-
-                            // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                            if (xmlreq.readyState == 4) {
-
-                                // Verifica se o arquivo foi encontrado com sucesso
-                                if (xmlreq.status == 200) {
-                                    console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                    console.log(xmlreq.responseText);
-                                    res = JSON.parse(xmlreq.responseText);
-                                    debito.textContent = res.debito;
-                                    credito.textContent = res.credito;
-                                    saldo.textContent = res.saldo;
-                                }else{
-                                    res = xmlreq.statusText;
-                                    console.log(res);
-                                }
-                            }
-                        };
-
-                        xmlreq.send(null);
-
-                    }
-                }else {
-
-                    //let posConta = conta.innerText.indexOf("Igual") + 8;
-                    let nomeConta = "";
-
-                    let sinalConta = "";
-
-
-
-                    let xmlreq = CriaRequest();
-
-                    // Iniciar uma requisição
-                    xmlreq.open("GET", "http://localhost/php/consulta.php?data=" + Data + "&mina=" + nomeMina + "&conta=" + nomeConta + "&sinalConta=" + sinalConta + "&sinalMina=" + sinalMina + "&formaPagamento=V", true);
-
-                    // Atribui uma função para ser executada sempre que houver uma mudança de ado
-                    xmlreq.onreadystatechange = function(){
-
-                        // Verifica se foi concluído com sucesso e a conexão fechada (readyState=4)
-                        if (xmlreq.readyState == 4) {
-
-                            // Verifica se o arquivo foi encontrado com sucesso
-                            if (xmlreq.status == 200) {
-                                console.log(`${Data}, ${nomeMina}, ${nomeConta}, ${sinalConta}, ${sinalMina}`);
-                                console.log(xmlreq.responseText);
-                                res = JSON.parse(xmlreq.responseText);
-                                debito.textContent = res.debito;
-                                credito.textContent = res.credito;
-                                saldo.textContent = res.saldo;
+                                debito.textContent = valor[0];
+                                credito.textContent = valor[1];
+                                saldo.textContent = valor[2];
+                                saldoInicial.textContent = valor[3];
+                                
                             }else{
                                 res = xmlreq.statusText;
                                 console.log(res);
@@ -1270,6 +2148,9 @@
 
             }
         }
+        
+        let search = document.getElementById("div_grid_search");
+        search.style.display = 'none';
         
     </script>
 </body>
