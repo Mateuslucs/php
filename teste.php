@@ -95,7 +95,7 @@
 
     <script>
 
-        function CriaRequest() {
+function CriaRequest() {
             try{
                 request = new XMLHttpRequest();
             }catch (IEAtual){
@@ -176,7 +176,7 @@
 
         paginas.forEach(ele => {
             ele.addEventListener('click', function(){
-
+                
                 if(formaPagamento !== null){
 
                     console.log("forma de pagamento diferente de null");

@@ -375,6 +375,49 @@ echo "$datadb_js, $nomeMina_js, $nomeConta_js, $formaPagamentoDB, $sinalMina, $s
 
 
 
+function extrato($condicao) {
+    $servidor = "134.209.114.247";
+	$usuario = "sc-dev";
+	$senha = "SC-db@065";
+	$dbname = "basantana";
+	$port = "33354";
+
+	$conexao = mysqli_connect($servidor,$usuario,$senha,$dbname,$port);
+	if(!$conexao){
+		die("Houve um problema: ".mysqli_connect_error());
+	}
+
+    $sql = "SELECT sum(if(debitoCredito='D',valor,0)) as debito, sum(if(debitoCredito='C',valor,0)) as credito, sum(if(debitoCredito='C',valor,0)) - sum(if(debitoCredito='D',valor,0)) as saldo from movimentacao $condicao";
+
+    $resDB = mysqli_query($conexao,$sql);
+
+	$credito = "";
+	$debito = "";
+	$saldo = "";
+	while($row = mysqli_fetch_array($resDB)){
+		$debito = $row['debito'];
+		$credito = $row['credito'];
+		$saldo = $row['saldo'];
+	}
+
+	$json = array(
+		'debito' => $debito,
+		'credito' => $credito,
+		'saldo' => $saldo
+	);
+
+	return $json;
+	mysqli_close($conexao);
+
+}
+
+$saldoInicial = saldoInicial($datadb_js,$nomeConta_js,$nomeMina_js) != "" ? saldoInicial($datadb_js,$nomeConta_js,$nomeMina_js) : 0;
+$debito = $obj['debito'] != "" ? $obj['debito'] : 0;
+$credito = $obj['credito'] != "" ? $obj['credito'] : 0;
+$saldoFinal = $saldoInicial + $credito - $debito
+
+
+
 
 
 
