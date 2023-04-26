@@ -8,7 +8,7 @@
 </head>
 <body>
     <?php
-    require_once "fighters.php";
+    require_once "fighters.php"; 
     $fighters = [];
 
     $fighters[0] = new Fighters("Mateus lucas", "Brasil", 21, 1.75, 83.6, 10, 0, 0);

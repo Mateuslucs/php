@@ -16,7 +16,9 @@ class Fighters {
         $this->yearOld = $yearOld;
         $this->height = $height;
         $this->setWeight($weight);
-
+        $this->victories = $victories;
+        $this->defeat = $defeat;
+        $this->stalemate = $stalemate;
     }
 
     public function present(){
