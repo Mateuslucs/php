@@ -22,19 +22,30 @@ class Fighters {
     }
 
     public function present(){
-
+        echo "Lutador: ".$this->name;
+        echo "<br>Origem: ".$this->nationality;
+        echo "<br>".$this->yearOld." anos";
+        echo "<br>".$this->height." m de altura";
+        echo "<br>Pesando: ".$this->weight." Kg";
+        echo "<br>Ganhou: ".$this->victories;
+        echo "<br>Perdeu: ".$this->defeat;
+        echo "<br>Empatou: ".$this->stalemate;
     }
     public function status(){
-
+        echo $this->name;
+        echo "<br>É um peso: ".$this->category;
+        echo "<br>".$this->victories." vitorias";
+        echo "<br>".$this->defeat." derrotas";
+        echo "<br>".$this->stalemate."empates";
     }
     public function winFight(){
-
+        $this->setVictories($this->victories + 1);
     }
     public function loseFight(){
-
+        $this->setDefeat($this->defeat + 1);
     }
     public function stalemateFight(){
-
+        $this->setStalemate($this->stalemate + 1);
     }
 
     private function setName($name){

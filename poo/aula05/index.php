@@ -20,6 +20,8 @@
     $fighters[3] = new Fighters("Marcos", "Brasil", 20, 1.80, 100, 20, 2, 5);
 
     $fighters[4] = new Fighters("mero", "Brasil", 48, 1.71, 122.1, 50, 10, 20);
+
+    $fighters[3]->status();
     ?>
 </body>
 </html>

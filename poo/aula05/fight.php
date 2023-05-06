@@ -1,7 +1,7 @@
 <?php
 class Fight {
     private $challenged;
-    private $challenging;
+    private $challenger;
     private $rounds;
     private $approved;
 
