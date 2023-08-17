@@ -1,7 +1,7 @@
 <?php
 require_once 'Pessoa.php';
 
-class Employee extends Peple
+class Employee extends People
 {
     private $sector;
     private $working;
@@ -35,3 +35,4 @@ class Employee extends Peple
         return $this;
     }
 }
+

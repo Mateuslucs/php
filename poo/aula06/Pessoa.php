@@ -1,6 +1,6 @@
 <?php
 
-class Peple{
+class People{
     private $nome;
     private $years;
     private $sex;

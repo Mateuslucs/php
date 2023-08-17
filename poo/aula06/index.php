@@ -9,22 +9,22 @@
 <body>
     <pre>
         <?php
-        require_once 'Pessoa.php';
-        require_once 'Aluno.php';
-        require_once 'Teacher.php';
-        require_once 'Employee.php';
-        $p1 = new Peple();
-        $p2 = new Aluno();
-        $p3 = new Teacher();
-        $p4 = new Employee();
-        $p1->setNome("mateus lucas");
-        $p2->setNome("maria");
-        $p3->setNome("jukia");
-        $p4->setNome("cuaca");
-        print_r($p1);
-        print_r($p2);
-        print_r($p3);
-        print_r($p4);
+        require_once '../vendor/autoload.php';
+        // $p1 = new People();
+        // $p2 = new Aluno();
+        // $p3 = new Teacher();
+        // $p4 = new Employee();
+        // $p1->setNome("mateus lucas");
+        // $p2->setNome("maria");
+        // $p3->setNome("jukia");
+        // $p4->setNome("cuaca");
+        // print_r($p1);
+        // print_r($p2);
+        // print_r($p3);
+        // print_r($p4);
+        $nome = 'People';
+        $objeto = new $nome;
+        $objeto-
         ?>
     </pre>
 </body>
