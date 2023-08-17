@@ -1,6 +1,6 @@
 <?php
 require_once 'Pessoa.php';
-class Teacher extends Peple
+class Teacher extends People
 {
     private $specialty;
     private $wage;
