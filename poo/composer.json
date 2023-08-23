@@ -2,7 +2,8 @@
     "name": "mateu/poo",
     "autoload": {
         "psr-4": {
-            "app\\": "app/"
+            "app\\": "app/",
+            "../poo\\": "poo/"
         }
     },
     "authors": [
