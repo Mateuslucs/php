@@ -1,6 +1,6 @@
 <?php
 
-class People
+abstract class People
 {
     private $name;
     private $year;

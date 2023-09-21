@@ -6,6 +6,12 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <?php
+    require_once 'Visitant.php';
+
+    $v = new Visitant();
+    $teste = Visitant::teste("merda");
+    echo $teste;
+    ?>
 </body>
 </html>
