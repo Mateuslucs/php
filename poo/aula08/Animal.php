@@ -5,15 +5,9 @@ abstract class Animal{
     protected $year;
     protected $limbs;
 
-    public function move(){
-        
-    }
+    abstract function move();
 
-    public function feed(){
-    
-    }
+    abstract function feed();
 
-    public function makeSound(){
-        
-    }
+    abstract function makeSound();
 }
